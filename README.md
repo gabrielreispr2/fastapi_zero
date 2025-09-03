@@ -1,5 +1,3 @@
-
-
 # 🚀 Pipeline de Automação de Pedidos com Google APIs
 
 Este projeto automatiza o fluxo de processamento de pedidos utilizando as APIs do Google. Ele lê os pedidos de uma planilha do Google Sheets, busca informações de produtos em outra planilha (ou arquivo Excel) no Google Drive, calcula os totais e envia e-mails de confirmação personalizados via Gmail.
@@ -65,40 +63,27 @@ Agora, prepare sua máquina para executar o script.
 
 1.  **Clone o Repositório**
     ```bash
-    git clone <URL_DO_SEU_REPOSITORIO>
+    git clone <URL_DO_REPOSITORIO>
     cd <NOME_DO_SEU_REPOSITORIO>
     ```
 
-2.  **Crie um Ambiente Virtual**
-    * É uma boa prática isolar as dependências do projeto.
+2.  **Crie um Ambiente Virtual no Anaconda**
     ```bash
-    # Crie o ambiente
-    python3 -m venv .venv
-
-    # Ative o ambiente (para Linux/Mac)
-    source .venv/bin/activate
+    conda create --name nome_do_ambiente python=versão_do_python
     ```
 
-3.  **Instale as Dependências**
-    * Crie um arquivo `requirements.txt` com o conteúdo abaixo e depois execute o `pip`.
+3.  **Ativando o ambiente**
+    ```bash
+    conda activate nome_do_ambiente
+    ```
 
-    *Arquivo `requirements.txt`:*
-    ```
-    numpy
-    pandas
-    tenacity
-    python-dotenv
-    rich
-    google-api-python-client
-    google-auth-oauthlib
-    openpyxl # Necessário para ler arquivos .xlsx
-    ```
+4.  **Instale as Dependências**
     *Instale com o pip:*
     ```bash
     pip install -r requirements.txt
     ```
 
-4.  **Posicione o Arquivo de Credenciais**
+5.  **Posicione o Arquivo de Credenciais**
     * Mova o arquivo `client_secret.json` que você baixou para o diretório de configuração.
     ```bash
     # Cria o diretório se ele não existir
@@ -108,7 +93,7 @@ Agora, prepare sua máquina para executar o script.
     mv ~/Downloads/client_secret.json ~/.config/pedidos-google/
     ```
 
-5.  **Crie o Arquivo de Variáveis de Ambiente (`.env`)**
+6.  **Crie o Arquivo de Variáveis de Ambiente (`.env`)**
     * Na raiz do seu projeto, crie um arquivo chamado `.env`.
     * Copie o conteúdo do exemplo abaixo e preencha com suas informações.
 
