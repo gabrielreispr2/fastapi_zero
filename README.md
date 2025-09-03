@@ -118,8 +118,16 @@ Agora, prepare sua máquina para executar o script.
 
 ## ▶️ Como Executar o Script
 
-Com tudo configurado, basta rodar o comando abaixo no seu terminal (lembre-se de estar com o ambiente virtual ativado):
+1.  **Instale o Jupyter Notebook**
+    ```bash
+    conda install jupyter notebook
+    ```
 
-```bash
-python3 seu_script.py
+2.  **Inicie o Jupyter Notebook**
+    ```bash
+    jupyter notebook
+    ```
+
+3.  **Navegue até o diretório clonado**
+    Por navegue até o diretório clonado e execute o script
 
