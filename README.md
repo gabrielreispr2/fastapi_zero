@@ -128,8 +128,6 @@ Agora, prepare sua máquina para executar o script.
     jupyter notebook
     ```
 
-3.  **Navegue até o diretório clonado**
-
-4.  
-    Por fim, navegue até o diretório clonado e execute o script
+3.  **Por fim, navegue até o diretório clonado e execute o script**
+  
 
