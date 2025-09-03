@@ -1,123 +1,138 @@
-Pipeline de Pedidos via Google APIs
+# 🚀 Pipeline de Automação de Pedidos com Google APIs
 
-Este script automatiza o processo de gestão de pedidos, integrando Google Sheets, Google Drive e Gmail para criar um fluxo de trabalho coeso e eficiente.
-✨ Funcionalidades
+Este projeto automatiza o fluxo de processamento de pedidos utilizando as APIs do Google. Ele lê os pedidos de uma planilha do Google Sheets, busca informações de produtos em outra planilha (ou arquivo Excel) no Google Drive, calcula os totais e envia e-mails de confirmação personalizados via Gmail.
 
-    Leitura de Pedidos: Extrai dados de pedidos diretamente de uma planilha do Google Sheets.
+## ✨ Funcionalidades
 
-    Consulta de Produtos: Lê a tabela de produtos, que pode ser tanto uma planilha do Google Sheets quanto um arquivo Excel (.xlsx) armazenado no Google Drive.
+- **Leitura de Pedidos:** Extrai dados de pedidos diretamente de uma planilha do Google Sheets.
+- **Consulta de Produtos:** Lê a tabela de produtos, que pode ser tanto um Google Sheet quanto um arquivo Excel (`.xlsx`) armazenado no Google Drive.
+- **Cálculo de Totais:** Processa os pedidos e calcula o valor total a ser cobrado de cada cliente.
+- **Envio de E-mails:** Envia e-mails de confirmação personalizados para cada cliente através da API do Gmail.
+- **Segurança:** Armazena os tokens de autenticação OAuth de forma segura no diretório `~/.config/pedidos-google/`.
 
-    Cálculo de Totais: Processa os pedidos e calcula o valor total a ser cobrado de cada cliente.
+## 📋 Requisitos
 
-    Envio de E-mails: Envia e-mails de confirmação personalizados para cada cliente através da API do Gmail.
+- Python 3.8+
+- Uma Conta Google
+- Um projeto configurado no Google Cloud Platform
+- As bibliotecas Python listadas no arquivo `requirements.txt`
 
-    Segurança: Armazena os tokens de autenticação OAuth de forma segura no diretório ~/.config/pedidos-google/.
+## ⚙️ Guia de Configuração Completo
 
-📋 Requisitos
+Para que o script funcione, são necessárias duas etapas de configuração: preparar as APIs no Google Cloud e configurar o seu ambiente local.
 
-    Python 3.8 ou superior
+### Parte A: Configuração do Projeto no Google Cloud
 
-    Bibliotecas listadas no arquivo requirements.txt.
+Siga estes passos para obter as credenciais de acesso às APIs.
 
-    Uma Conta Google.
+1.  **Crie um Projeto no Google Cloud**
+    * Acesse o [Google Cloud Console](https://console.cloud.google.com/).
+    * No menu superior, clique no seletor de projetos e selecione **"NOVO PROJETO"**.
+    * Dê um nome ao projeto (ex: `Automacao-Pedidos`) e clique em **"CRIAR"**.
 
-    Acesso a um projeto no Google Cloud Platform.
+2.  **Ative as APIs Necessárias**
+    * Com o novo projeto selecionado, vá para o menu de navegação **APIs e serviços > Biblioteca**.
+    * Pesquise e ative as três APIs a seguir, uma de cada vez:
+        * `Google Sheets API`
+        * `Google Drive API`
+        * `Gmail API`
 
-⚙️ Guia de Configuração
+3.  **Configure a Tela de Consentimento OAuth**
+    * No menu, acesse **APIs e serviços > Tela de consentimento OAuth**.
+    * Selecione o tipo de usuário **"Externo"** e clique em **"CRIAR"**.
+    * Preencha as informações obrigatórias:
+        * **Nome do app:** Um nome de sua preferência (ex: "App de Pedidos").
+        * **E-mail para suporte do usuário:** Seu e-mail de contato.
+        * **Dados de contato do desenvolvedor:** Seu e-mail novamente.
+    * Salve e continue nas próximas etapas.
 
-Para utilizar o script, é necessário configurar um projeto no Google Cloud Platform para obter as credenciais de acesso às APIs. Siga os passos abaixo.
-A. Configuração do Projeto no Google Cloud
+4.  **Crie as Credenciais**
+    * No menu, vá para **APIs e serviços > Credenciais**.
+    * Clique em **"+ CRIAR CREDENCIAIS"** e selecione **"ID do cliente OAuth"**.
+    * Em **"Tipo de aplicativo"**, escolha **"App para computador"**.
+    * Dê um nome (ex: "Credenciais Desktop") e clique em **"CRIAR"**.
 
-    Acesse o Google Cloud Platform
+5.  **Faça o Download do JSON e Adicione Usuários de Teste**
+    * Após a criação, uma janela aparecerá. Clique em **"FAZER O DOWNLOAD DO JSON"**.
+    * **‼️ IMPORTANTE:** Renomeie o arquivo baixado para `client_secret.json`.
+    * Volte para a **Tela de consentimento OAuth** e, na seção **"Usuários de teste"**, adicione a Conta Google que você usará para executar o script.
 
-        Se você não tiver uma conta, crie uma em console.cloud.google.com.
+### Parte B: Configuração do Ambiente Local
 
-    Crie um Novo Projeto
+Agora, prepare sua máquina para executar o script.
 
-        No painel superior, clique no seletor de projetos.
+1.  **Clone o Repositório**
+    ```bash
+    git clone <URL_DO_SEU_REPOSITORIO>
+    cd <NOME_DO_SEU_REPOSITORIO>
+    ```
 
-        [Imagem: Seletor de projetos]
+2.  **Crie um Ambiente Virtual**
+    * É uma boa prática isolar as dependências do projeto.
+    ```bash
+    # Crie o ambiente
+    python3 -m venv .venv
 
-        Na janela que abrir, clique em "NOVO PROJETO".
+    # Ative o ambiente (para Linux/Mac)
+    source .venv/bin/activate
+    ```
 
-        [Imagem: Botão para criar novo projeto]
+3.  **Instale as Dependências**
+    * Crie um arquivo `requirements.txt` com o conteúdo abaixo e depois execute o `pip`.
 
-        Dê um nome ao seu projeto (ex: "Automacao-Pedidos") e selecione uma organização, se aplicável. Clique em "CRIAR".
+    *Arquivo `requirements.txt`:*
+    ```
+    numpy
+    pandas
+    tenacity
+    python-dotenv
+    rich
+    google-api-python-client
+    google-auth-oauthlib
+    openpyxl # Necessário para ler arquivos .xlsx
+    ```
+    *Instale com o pip:*
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-        [Imagem: Tela de criação de projeto]
+4.  **Posicione o Arquivo de Credenciais**
+    * Mova o arquivo `client_secret.json` que você baixou para o diretório de configuração.
+    ```bash
+    # Cria o diretório se ele não existir
+    mkdir -p ~/.config/pedidos-google/
 
-    Selecione o Projeto Criado
+    # Mova o arquivo (ajuste o caminho se necessário)
+    mv ~/Downloads/client_secret.json ~/.config/pedidos-google/
+    ```
 
-        Abra novamente o seletor de projetos e escolha o projeto que você acabou de criar para garantir que ele está ativo.
+5.  **Crie o Arquivo de Variáveis de Ambiente (`.env`)**
+    * Na raiz do seu projeto, crie um arquivo chamado `.env`.
+    * Copie o conteúdo do exemplo abaixo e preencha com suas informações.
 
-        [Imagem: Selecionando o projeto recém-criado]
+    *Exemplo de `.env`:*
+    ```env
+    # ID da planilha do Google Sheets que contém os pedidos.
+    # Ex: "1a2b3c4d..." da URL da sua planilha.
+    SHEETS_PEDIDOS_ID="SEU_ID_DA_PLANILHA_DE_PEDIDOS"
 
-    Ative as APIs Necessárias
+    # (Opcional) Range da planilha de pedidos. Padrão: "A:Z"
+    SHEETS_PEDIDOS_RANGE="Pagina1!A:Z"
 
-        No menu de navegação à esquerda, vá para APIs e serviços > Biblioteca.
+    # (Opcional) ID da pasta no Google Drive onde o arquivo de produtos está.
+    DRIVE_PRODUTOS_FOLDER_ID="SEU_ID_DA_PASTA_NO_DRIVE"
 
-        [Imagem: Menu de navegação para APIs e Serviços]
+    # Nome do arquivo de produtos (pode ser .xlsx ou Google Sheet).
+    # Se deixado em branco, busca uma aba "Produtos" na mesma planilha dos pedidos.
+    PRODUTOS_FILENAME="Tabela de Produtos.xlsx"
 
-        Use a barra de busca para encontrar e ativar as três APIs a seguir, uma por uma:
+    # E-mail que será usado para enviar as confirmações.
+    SENDER_EMAIL="seu-email@gmail.com"
+    ```
 
-            Google Sheets API
+## ▶️ Como Executar o Script
 
-            Google Drive API
+Com tudo configurado, basta rodar o comando abaixo no seu terminal (lembre-se de estar com o ambiente virtual ativado):
 
-            Gmail API
-
-        [Imagem: Tela de ativação de uma API]
-
-    Configure a Tela de Consentimento OAuth
-
-        Ainda em APIs e serviços, vá para a "Tela de consentimento OAuth".
-
-        [Imagem: Menu para Tela de consentimento OAuth]
-
-        Selecione o tipo de usuário "Externo" e clique em "CRIAR".
-
-        [Imagem: Selecionando tipo de usuário Externo]
-
-        Preencha as informações obrigatórias:
-
-            Nome do app: Dê um nome de sua preferência (ex: "App de Pedidos").
-
-            E-mail para suporte do usuário: Insira seu e-mail.
-
-            Dados de contato do desenvolvedor: Insira seu e-mail novamente.
-
-        Clique em "SALVAR E CONTINUAR" nas seções seguintes até chegar ao fim.
-
-    Crie as Credenciais (ID do Cliente OAuth)
-
-        No menu à esquerda, vá para "Credenciais" e clique em "+ CRIAR CREDENCIAIS" > "ID do cliente OAuth".
-
-        [Imagem: Botão para criar credenciais]
-
-        Em "Tipo de aplicativo", selecione "App para computador".
-
-        Dê um nome para a credencial (ex: "Credenciais Desktop") e clique em "CRIAR".
-
-        [Imagem: Configurando o tipo de aplicativo]
-
-    Faça o Download do Arquivo JSON
-
-        Uma janela aparecerá com o ID e a chave secreta do cliente. Clique em "FAZER O DOWNLOAD DO JSON".
-
-        [Imagem: Janela para download do arquivo JSON]
-
-        ‼️ IMPORTANTE: Renomeie o arquivo baixado para client_secret.json. Este passo é crucial para que o script funcione.
-
-    Adicione Usuários de Teste
-
-        Como o aplicativo está em modo de teste, você precisa autorizar explicitamente as contas do Google que poderão usá-lo.
-
-        Volte para a "Tela de consentimento OAuth".
-
-        Na seção "Usuários de teste", clique em "+ ADD USERS".
-
-        [Imagem: Adicionando um usuário de teste]
-
-        Adicione o endereço de e-mail da conta do Google que você usará para rodar o script e enviar os e-mails.
-
-Com estes passos, seu ambiente no Google Cloud está pronto. O próximo passo é configurar o ambiente local!
+```bash
+python3 seu_script.py
