@@ -78,7 +78,6 @@ Agora, prepare sua máquina para executar o script.
     ```
 
 4.  **Instale as Dependências**
-    *Instale com o pip:*
     ```bash
     pip install -r requirements.txt
     ```
