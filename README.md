@@ -129,5 +129,7 @@ Agora, prepare sua máquina para executar o script.
     ```
 
 3.  **Navegue até o diretório clonado**
-    Por navegue até o diretório clonado e execute o script
+
+4.  
+    Por fim, navegue até o diretório clonado e execute o script
 
