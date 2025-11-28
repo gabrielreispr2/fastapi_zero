@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
@@ -12,6 +13,11 @@ from fastapi_zero.schemas import (
     UserList,
     UserPublic,
     UserSchema,
+)
+from fastapi_zero.security import (
+    create_acess_token,
+    get_password_hash,
+    verify_password,
 )
 
 app = FastAPI(title='Minha API')
@@ -52,7 +58,10 @@ def create_user(user: UserSchema, session=Depends(get_session)):
                 detail='Email already exists', status_code=HTTPStatus.CONFLICT
             )
 
-    db_user = User(**user.model_dump())
+    db_user = User(
+        **user.model_dump(exclude={'password'}),
+        password=get_password_hash(user.password),
+    )
 
     session.add(db_user)
     session.commit()
@@ -82,13 +91,14 @@ def update_user(user_id: int, user: UserSchema, session=Depends(get_session)):
     try:
         user_db.email = user.email
         user_db.username = user.username
-        user_db.password = user.password
+        user_db.password = get_password_hash(user.password)
 
         session.add(user_db)
         session.commit()
         session.refresh(user_db)
 
         return user_db
+
     except IntegrityError:
         raise HTTPException(
             HTTPStatus.CONFLICT,
@@ -127,3 +137,28 @@ def read_user(user_id: int, session=Depends(get_session)):
         )
 
     return user_db
+
+
+@app.post('/token')
+def login_for_acess_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    session=Depends(get_session),
+):
+    user = session.scalar(
+        select(User).where((User.email == form_data.username))
+    )
+
+    exception = HTTPException(
+        status_code=HTTPStatus.UNAUTHORIZED,
+        detail='Incorrect email or password',
+    )
+
+    if not user:
+        raise exception
+
+    if not verify_password(form_data.password, user.password):
+        raise exception
+
+    access_token = create_acess_token(data={'sub': user.email})
+
+    return {'access_token': access_token, 'token_type': 'Bearer'}
