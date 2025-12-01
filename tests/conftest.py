@@ -65,7 +65,7 @@ def user(session):
     password = 'secret'
     user = User(
         username='user',
-        email='test@test.com',
+        email='gabriel@example.com',
         password=get_password_hash(password),
     )
     session.add(user)
@@ -75,3 +75,13 @@ def user(session):
     user.clean_password = password
 
     return user
+
+
+@pytest.fixture
+def token(client, user):
+    response = client.post(
+        '/token',
+        data={'username': user.email, 'password': user.clean_password},
+    )
+
+    return response.json()['access_token']
